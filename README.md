@@ -16,4 +16,8 @@ In this example, we use Vercel AI packages to streamline most of the manual work
 
 Thanks to the Langtail SDK, we generate static types for your Langtail prompt, so you don't need to worry about the structure of the arguments passed to your tool handlers.
 
+## [Weather Chat with Langtail's useChatStream](./examples/langtail-react-hook/)
+
+Here you can see how you can simply work with AI streams and `Readablestream` using our [custom React hook `useChatStream`](https://github.com/langtail/examples/blob/main/examples/langtail-react-hook/app/components/chat.tsx#L78). You just request your backend and the AI messages will be filled up for you with all the goodies. Like message deltas and tool calls.
+
 More examples are coming soon.
