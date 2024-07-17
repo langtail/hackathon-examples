@@ -24,6 +24,8 @@ export default function IndexPage() {
 
   const getVideoInfo = trpc.getVideoInfo.useMutation();
   const getVideoAutoTranscript = trpc.getVideoAutoTranscript.useMutation();
+  const getVideos = trpc.getVideos.useQuery();
+  const videos = getVideos.data;
 
   const handleUrlInputBlur = (e: FormEvent<HTMLInputElement>) => {
     if (!form.formState.isValid) {
@@ -169,6 +171,19 @@ export default function IndexPage() {
             "py-2 px-3 rounded-md bg-black/10 text-sm m-4 min-h-9 animate-pulse"
           )}
         />
+      )}
+
+      {videos && (
+        <div className="flex flex-col gap-2 m-4">
+          <h2 className="text-lg font-medium">Videos</h2>
+          <ul>
+            {videos.map((video) => (
+              <li key={video.id}>
+                {video.id} -{video.title} - {video.url}
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
     </div>
   );

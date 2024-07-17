@@ -3,8 +3,12 @@ import youtubeDl from "youtube-dl-exec";
 import { z } from "zod";
 import { lt } from "../../@/lib/utils";
 import { procedure, router } from "../trpc";
+import { prisma } from "../../@/lib/prisma";
 
 export const appRouter = router({
+  getVideos: procedure.query(async () => {
+    return await prisma.video.findMany();
+  }),
   getVideoInfo: procedure
     .input(
       z.object({
