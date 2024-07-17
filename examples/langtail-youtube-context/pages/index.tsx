@@ -33,7 +33,7 @@ export default function IndexPage() {
     }
     const url = e.currentTarget.value;
     if (url) {
-      if (getVideoInfo.data?.original_url !== url) {
+      if (getVideoInfo.data?.video.url !== url) {
         getVideoAutoTranscript.reset();
         getVideoInfo.mutate({
           url,
@@ -63,7 +63,7 @@ export default function IndexPage() {
             <img
               className="aspect-video w-full bg-black/10 rounded-md"
               alt="thumbnail"
-              src={getVideoInfo.data?.thumbnail}
+              src={getVideoInfo.data?.video.thumbnail}
             />
           )}
 
@@ -75,7 +75,7 @@ export default function IndexPage() {
               getVideoInfo.isPending && "animate-pulse"
             )}
           >
-            {getVideoInfo.data?.title || ""}
+            {getVideoInfo.data?.video.title || ""}
           </a>
         </div>
 

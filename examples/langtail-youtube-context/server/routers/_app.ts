@@ -5,6 +5,14 @@ import { lt } from "../../@/lib/utils";
 import { procedure, router } from "../trpc";
 import { prisma } from "../../@/lib/prisma";
 
+function parseYTDate(dateString: string) {
+  const year = dateString.substring(0, 4);
+  const month = dateString.substring(4, 6);
+  const day = dateString.substring(6, 8);
+
+  return new Date(`${year}-${month}-${day}`);
+}
+
 export const appRouter = router({
   getVideos: procedure.query(async () => {
     return await prisma.video.findMany();
@@ -16,15 +24,30 @@ export const appRouter = router({
       })
     )
     .mutation(async (opts) => {
-      const info = await youtubeDl(opts.input.url, {
-        dumpSingleJson: true,
-        noCheckCertificates: true,
-        noWarnings: true,
-        preferFreeFormats: true,
-        addHeader: ["referer:youtube.com", "user-agent:googlebot"],
-      });
+      try {
+        const info = await youtubeDl(opts.input.url, {
+          dumpSingleJson: true,
+          noCheckCertificates: true,
+          noWarnings: true,
+          preferFreeFormats: true,
+          addHeader: ["referer:youtube.com", "user-agent:googlebot"],
+        });
 
-      return info;
+        // save video info to database
+        const video = await prisma.video.create({
+          data: {
+            url: info.webpage_url,
+            title: info.title,
+            description: info.description,
+            thumbnail: info.thumbnail,
+            publishedAt: parseYTDate(info.upload_date),
+          },
+        });
+
+        return { info, video };
+      } catch (error) {
+        console.error(error);
+      }
     }),
 
   getVideoAutoTranscript: procedure
