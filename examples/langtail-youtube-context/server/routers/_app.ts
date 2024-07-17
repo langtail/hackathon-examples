@@ -1,9 +1,14 @@
 import fs from "fs";
+import OpenAI from "openai";
 import youtubeDl from "youtube-dl-exec";
 import { z } from "zod";
+import { prisma } from "../../@/lib/prisma";
 import { lt } from "../../@/lib/utils";
 import { procedure, router } from "../trpc";
-import { prisma } from "../../@/lib/prisma";
+
+const openai = new OpenAI({
+  apiKey: process.env.OPEN_AI_KEY,
+});
 
 function parseYTDate(dateString: string) {
   const year = dateString.substring(0, 4);
@@ -68,7 +73,7 @@ export const appRouter = router({
       }
     }),
 
-  getVideoAutoTranscript: procedure
+  processViaAutoTranscription: procedure
     .input(
       z.object({
         url: z.string(),
@@ -106,7 +111,7 @@ export const appRouter = router({
         console.error(err);
       }
     }),
-  downloadVideoAudio: procedure
+  processViaAudioWhisper: procedure
     .input(
       z.object({
         url: z.string(),
@@ -114,11 +119,33 @@ export const appRouter = router({
     )
     .mutation(async (opts) => {
       try {
+        // delete file
+        if (fs.existsSync(process.cwd() + `/temp/audio.m4a`)) {
+          await fs.promises.unlink(process.cwd() + `/temp/audio.m4a`);
+        }
+
         await youtubeDl(opts.input.url, {
           extractAudio: true,
-          audioFormat: "mp3",
-          output: "./temp/audio.mp3",
+          audioQuality: 9,
+          format: "m4a",
+          output: "./temp/audio.m4a",
         });
+
+        const transcription = await openai.audio.transcriptions.create({
+          file: fs.createReadStream(process.cwd() + `/temp/audio.m4a`),
+          model: "whisper-1",
+        });
+
+        const result = await lt.prompts.invoke({
+          prompt: "social-media-post",
+          environment: "staging",
+          variables: {
+            transcription: transcription.text || "",
+          },
+          // stream: true,
+        });
+
+        return result.choices || "no content";
       } catch (err) {
         console.error(err);
       }

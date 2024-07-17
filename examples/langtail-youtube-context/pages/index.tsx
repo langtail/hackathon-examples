@@ -9,6 +9,7 @@ const formSchema = z.object({
   url: z.string().url(),
   maxLength: z.string().optional(),
   notes: z.string().optional(),
+  useWhisper: z.boolean().optional(),
 });
 
 export default function IndexPage() {
@@ -19,29 +20,42 @@ export default function IndexPage() {
       url: "",
       maxLength: "",
       notes: "",
+      useWhisper: false,
     },
   });
 
-  const getVideoInfo = trpc.getVideoInfo.useMutation();
-  const getVideoAutoTranscript = trpc.getVideoAutoTranscript.useMutation();
   const getVideos = trpc.getVideos.useQuery();
-  const videos = getVideos.data;
+  const getVideoInfo = trpc.getVideoInfo.useMutation();
+  const processViaAutoTranscription =
+    trpc.processViaAutoTranscription.useMutation();
+  const processViaAudioWhisper = trpc.processViaAudioWhisper.useMutation();
+
+  const isProcessing =
+    processViaAutoTranscription.isPending || processViaAudioWhisper.isPending;
+
+  const message =
+    processViaAutoTranscription.data?.[0]?.message?.content ||
+    processViaAudioWhisper.data?.[0]?.message?.content;
 
   const handleUrlInputBlur = (e: FormEvent<HTMLInputElement>) => {
-    if (!form.formState.isValid) {
-      return;
-    }
-    const url = e.currentTarget.value;
+    const validationResult = z.string().url().safeParse(e.currentTarget.value);
+
+    if (!validationResult.success) return;
+
+    const url = validationResult.data;
+
     if (url) {
       if (getVideoInfo.data?.video.url !== url) {
-        getVideoAutoTranscript.reset();
+        processViaAutoTranscription.reset();
+        processViaAudioWhisper.reset();
         getVideoInfo.mutate({
           url,
         });
       }
     } else {
       getVideoInfo.reset();
-      getVideoAutoTranscript.reset();
+      processViaAutoTranscription.reset();
+      processViaAudioWhisper.reset();
     }
   };
 
@@ -82,9 +96,17 @@ export default function IndexPage() {
         <form
           className="flex flex-col md:w-4/6 gap-2"
           onSubmit={form.handleSubmit((data) => {
-            getVideoAutoTranscript.mutate({
-              url: data.url,
-            });
+            if (data.useWhisper) {
+              processViaAutoTranscription.reset();
+              processViaAudioWhisper.mutate({
+                url: data.url,
+              });
+            } else {
+              processViaAudioWhisper.reset();
+              processViaAutoTranscription.mutate({
+                url: data.url,
+              });
+            }
           })}
         >
           <input
@@ -107,6 +129,15 @@ export default function IndexPage() {
             {...form.register("notes")}
           />
 
+          <div className="flex gap-2 items-center">
+            <label htmlFor="useWhisper">Use Open AI whisper</label>
+            <input
+              id="useWhisper"
+              type="checkbox"
+              {...form.register("useWhisper")}
+            />
+          </div>
+
           {form.formState.errors && (
             <div className="text-sm text-red-500">
               {Object.values(form.formState.errors).map((error) => (
@@ -127,45 +158,43 @@ export default function IndexPage() {
             <button
               className={cn(
                 "bg-primary rounded-md px-3 py-1 text-sm text-slate-50",
-                (getVideoInfo.isPending ||
-                  getVideoAutoTranscript.isPending ||
-                  !getVideoInfo.data) &&
+                (isProcessing || !getVideoInfo.data) &&
                   "opacity-50 cursor-not-allowed",
-                getVideoAutoTranscript.isPending && "animate-pulse"
+                isProcessing && "animate-pulse"
               )}
               type="submit"
               disabled={getVideoInfo.isPending || !getVideoInfo.data}
             >
-              {getVideoAutoTranscript.isPending ? "Processing" : "Process"}
+              {isProcessing ? "Processing" : "Process"}
             </button>
           </div>
         </form>
       </div>
 
-      {!getVideoAutoTranscript.isPending && getVideoAutoTranscript.data && (
+      {/* {downloadAudio.data && (
+        <div className="p-4 text-sm">
+          <p>{downloadAudio.data.text}</p>
+        </div>
+      )} */}
+
+      {!isProcessing && message && (
         <div className="flex flex-col gap-2 m-4">
           <div className={cn("py-2 px-3 rounded-md bg-black/10 text-sm")}>
-            {getVideoAutoTranscript.data?.map((choice) => {
-              return (
-                <p className="" key={choice.index}>
-                  {choice.message.content}
-                </p>
-              );
-            })}
+            <p className="">{message}</p>
           </div>
 
           <div className="flex gap-2">
             <button className="p-2 text-xs bg-black/20 rounded-md">Copy</button>
             <a
               className="p-2 text-xs bg-black/20 rounded-md"
-              href={`https://twitter.com/intent/tweet?text=${getVideoAutoTranscript.data[0].message.content}`}
+              href={`https://twitter.com/intent/tweet?text=${message}`}
             >
               Share to twitter
             </a>
           </div>
         </div>
       )}
-      {getVideoAutoTranscript.isPending && (
+      {isProcessing && (
         <div
           className={cn(
             "py-2 px-3 rounded-md bg-black/10 text-sm m-4 min-h-9 animate-pulse"
@@ -173,18 +202,18 @@ export default function IndexPage() {
         />
       )}
 
-      {videos && (
+      {/* {getVideos.data && (
         <div className="flex flex-col gap-2 m-4">
           <h2 className="text-lg font-medium">Videos</h2>
           <ul>
-            {videos.map((video) => (
+            {getVideos.data.map((video) => (
               <li key={video.id}>
                 {video.id} -{video.title} - {video.url}
               </li>
             ))}
           </ul>
         </div>
-      )}
+      )} */}
     </div>
   );
 }
