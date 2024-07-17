@@ -7,9 +7,15 @@
     "type-check": "tsc"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.51.3",
+    "@trpc/client": "11.0.0-rc.465",
+    "@trpc/next": "11.0.0-rc.465",
+    "@trpc/react-query": "11.0.0-rc.465",
+    "@trpc/server": "11.0.0-rc.465",
     "next": "latest",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/node": "^12.12.21",

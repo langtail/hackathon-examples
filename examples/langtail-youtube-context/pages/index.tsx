@@ -1,13 +1,13 @@
-import Link from "next/link";
-import Layout from "../components/Layout";
+import { trpc } from "../utils/trpc";
 
-const IndexPage = () => (
-  <Layout title="Home | Next.js + TypeScript Example">
-    <h1>Hello Next.js 👋</h1>
-    <p>
-      <Link href="/about">About</Link>
-    </p>
-  </Layout>
-);
-
-export default IndexPage;
+export default function IndexPage() {
+  const hello = trpc.hello.useQuery({ text: "orest" });
+  if (!hello.data) {
+    return <div>Loading...</div>;
+  }
+  return (
+    <div>
+      <p>{hello.data.greeting}</p>
+    </div>
+  );
+}
