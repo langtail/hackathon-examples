@@ -32,7 +32,17 @@ export default function IndexPage() {
         {getVideoAutoTranscript.isPending ? "Processing" : "Process"}
       </button>
 
-      {getVideoAutoTranscript.data && <p>{getVideoAutoTranscript.data}</p>}
+      {getVideoAutoTranscript.data && (
+        <>
+          {getVideoAutoTranscript.data?.map((choice) => {
+            return (
+              <p className="" key={choice.index}>
+                {choice.message.content}
+              </p>
+            );
+          })}
+        </>
+      )}
     </form>
   );
 }

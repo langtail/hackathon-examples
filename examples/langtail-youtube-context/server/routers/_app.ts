@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { procedure, router } from "../trpc";
 import youtubeDl from "youtube-dl-exec";
+import { lt } from "../../@/lib/utils";
 import fs from "fs";
 import path from "path";
 
@@ -41,13 +42,22 @@ export const appRouter = router({
 
         // open file and read content
         const content = await fs.promises.readFile(
-          process.cwd() + `/temp/transcript.${opts.input.lang}.vtt`,
+          process.cwd() + `/temp/transcript.${opts.input.lang}.srt`,
           {
             encoding: "utf-8",
           }
         );
 
-        return content || "no content";
+        const result = await lt.prompts.invoke({
+          prompt: "social-media-post",
+          environment: "staging",
+          variables: {
+            transcription: content,
+          },
+          // stream: true,
+        });
+
+        return result.choices || "no content";
       } catch (err) {
         console.error(err);
       }
