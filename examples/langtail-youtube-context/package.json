@@ -16,6 +16,7 @@
     "autoprefixer": "^10.4.19",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "langtail": "^0.5.4",
     "next": "latest",
     "postcss": "^8.4.39",
     "react": "^18.2.0",
