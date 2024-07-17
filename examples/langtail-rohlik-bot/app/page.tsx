@@ -24,6 +24,7 @@ const FunctionCalling = () => {
         : "";
 
     alert("Adding product id to cart: " + product_id)
+    parent.postMessage({ type: "addProductToCart", product_id }, "*");
     return [{
       role: "tool" as const,
       name: toolCall.toolName,

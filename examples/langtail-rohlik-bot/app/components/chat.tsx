@@ -108,14 +108,14 @@ const Chat = ({ onAiStart, functionCallHandler }: ChatProps) => {
           className={styles.input}
           value={input}
           onChange={handleInputChange}
-          placeholder="Enter your question"
+          placeholder="Napište, co chcete uvařit"
         />
         <button
           type="submit"
           className={styles.button}
           disabled={inputDisabled}
         >
-          Send
+          ODESLAT
         </button>
       </form>
     </div>
