@@ -1,11 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import styles from "./page.module.css";
 import Chat from "./components/chat";
-import WeatherWidget, { WeatherData } from "./components/weather-widget";
-import zod from "zod";
-import { WeatherSchema, decodeSkyState } from "./utils/shared-utils";
 
 
 const FunctionCalling = () => {

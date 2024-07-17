@@ -3,9 +3,6 @@ import { NextRequest } from "next/server";
 import { convertToCoreMessages, streamText } from "ai";
 import { langtail } from "langtail/dist/vercelAi";
 import tools from "../../../langtailTools";
-import {
-  getWeather,
-} from "@/app/utils/shared-utils";
 
 export const runtime = "edge";
 
