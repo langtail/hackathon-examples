@@ -2,7 +2,8 @@ import { FormEvent } from "react";
 import { trpc } from "../utils/trpc";
 
 export default function IndexPage() {
-  const getVideoInfo = trpc.getVideoInfo.useMutation();
+  // const getVideoInfo = trpc.getVideoInfo.useMutation();
+  const getVideoAutoTranscript = trpc.getVideoAutoTranscript.useMutation();
 
   const handleProcessVideo = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -11,7 +12,7 @@ export default function IndexPage() {
       const url = formData.get("url") as string;
 
       if (url) {
-        getVideoInfo.mutate({
+        getVideoAutoTranscript.mutate({
           url,
         });
       }
@@ -24,14 +25,14 @@ export default function IndexPage() {
         name="url"
         type="text"
         placeholder="Enter youtube url"
-        disabled={getVideoInfo.isPending}
+        disabled={getVideoAutoTranscript.isPending}
       />
 
-      <button type="submit" disabled={getVideoInfo.isPending}>
-        {getVideoInfo.isPending ? "Processing" : "Process"}
+      <button type="submit" disabled={getVideoAutoTranscript.isPending}>
+        {getVideoAutoTranscript.isPending ? "Processing" : "Process"}
       </button>
 
-      {getVideoInfo.data && <p>{JSON.stringify(getVideoInfo.data, null, 2)}</p>}
+      {getVideoAutoTranscript.data && <p>{getVideoAutoTranscript.data}</p>}
     </form>
   );
 }

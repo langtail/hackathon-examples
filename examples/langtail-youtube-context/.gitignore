@@ -37,3 +37,6 @@ next-env.d.ts
 
 # python env
 venv
+
+# ignore temp folder
+temp
