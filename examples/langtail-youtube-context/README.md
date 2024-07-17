@@ -1,3 +1,11 @@
+# Hackathon Project: Youtube Context + Langtail
+
+## Description
+User provides youtube link and the app will provide summary of the video in the language of their choice.
+
+## Restrictions
+- Long videos will have large transcriptions. E.g. 1 hour interview video could have >200K tokens.
+
 # TypeScript Next.js example
 
 This is a really simple project that shows the usage of Next.js with TypeScript.
