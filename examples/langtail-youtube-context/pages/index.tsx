@@ -13,14 +13,22 @@ const formSchema = z.object({
 
 export default function IndexPage() {
   const form = useForm<z.infer<typeof formSchema>>({
+    mode: "all",
     resolver: zodResolver(formSchema),
-    defaultValues: {},
+    defaultValues: {
+      url: "",
+      maxLength: "",
+      notes: "",
+    },
   });
 
   const getVideoInfo = trpc.getVideoInfo.useMutation();
   const getVideoAutoTranscript = trpc.getVideoAutoTranscript.useMutation();
 
   const handleUrlInputBlur = (e: FormEvent<HTMLInputElement>) => {
+    if (!form.formState.isValid) {
+      return;
+    }
     const url = e.currentTarget.value;
     if (url) {
       if (getVideoInfo.data?.original_url !== url) {
@@ -97,6 +105,14 @@ export default function IndexPage() {
             {...form.register("notes")}
           />
 
+          {form.formState.errors && (
+            <div className="text-sm text-red-500">
+              {Object.values(form.formState.errors).map((error) => (
+                <p key={error.message}>{error.message}</p>
+              ))}
+            </div>
+          )}
+
           <div className="flex gap-2 justify-end">
             <div className="flex gap-2 items-center p-2 border rounded-md">
               <span className="text-sm">Output language</span>
@@ -108,11 +124,11 @@ export default function IndexPage() {
 
             <button
               className={cn(
-                "bg-black/20 rounded-md px-3 py-1 text-sm",
+                "bg-primary rounded-md px-3 py-1 text-sm text-slate-50",
                 (getVideoInfo.isPending ||
                   getVideoAutoTranscript.isPending ||
                   !getVideoInfo.data) &&
-                  "bg-black/20 opacity-50 cursor-not-allowed",
+                  "opacity-50 cursor-not-allowed",
                 getVideoAutoTranscript.isPending && "animate-pulse"
               )}
               type="submit"
