@@ -17,6 +17,24 @@ export const appRouter = router({
   getVideos: procedure.query(async () => {
     return await prisma.video.findMany();
   }),
+  getVideo: procedure
+    .input(
+      z.object({
+        id: z.string(),
+      })
+    )
+    .query(async (opts) => {
+      console.log(opts.input.id);
+      const video = await prisma.video.findUnique({
+        where: {
+          id: opts.input.id,
+        },
+      });
+
+      console.log(video);
+
+      return video;
+    }),
   getVideoInfo: procedure
     .input(
       z.object({
