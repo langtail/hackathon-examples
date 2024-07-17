@@ -63,9 +63,7 @@ const Chat = ({ onAiStart, functionCallHandler }: ChatProps) => {
 
     // run client-side tools that are automatically executed:
     async onToolCall(message) {
-      if (message.toolCall.toolName === "add_product_to_basket") {
-        return functionCallHandler?.(message.toolCall);
-      }
+        return functionCallHandler?.(message.toolCall)
     },
   });
 
