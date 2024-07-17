@@ -1,12 +1,36 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import styles from "./page.module.css";
 import Chat from "./components/chat";
 
+export type ProductData = {
+  productId: number;
+  productName: string;
+  imgPath: string;
+  baseLink: string;
+  price: {
+    full: number;
+    whole: number;
+    fraction: number;
+    currency: string;
+  };
+  pricePerUnit: {
+    full: number;
+    whole: number;
+    fraction: number;
+    currency: string;
+  };
+  coo: string|null;
+  textualAmount: string;
+  unit: string;
+};
+
 
 const FunctionCalling = () => {
-
+  const [productData, setProductData] = useState<ProductData[]>(
+    [],
+  );
 
   const functionCallHandler = async (toolCall: {
     args: any;
@@ -40,6 +64,10 @@ const FunctionCalling = () => {
         })
       })
       console.log(result)
+      setProductData((prev) => [
+        ...prev,
+        ...JSON.parse(result),
+      ]);
       return [{
         role: "tool" as const,
         name: toolCall.toolName,
@@ -56,6 +84,7 @@ const FunctionCalling = () => {
           <div className={styles.chat}>
             <Chat
               functionCallHandler={functionCallHandler}
+              productData={productData}
             />
           </div>
         </div>

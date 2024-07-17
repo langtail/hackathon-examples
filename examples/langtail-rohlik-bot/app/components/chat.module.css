@@ -72,10 +72,11 @@
   overflow-wrap: break-word;
 }
 
-.assistantMessage img {
-  max-width: 100%;
-  margin: 8px 0px 8px 0px;
+.assistantMessage .productImage {
+  max-width: 80%;
+  margin: 8px 0 8px 10%;
   border-radius: 8px;
+  cursor: pointer;
 }
 
 .userMessage {
@@ -140,4 +141,93 @@
   40% {
     transform: translateY(-20px);
   }
+}
+
+.product {
+  background: white;
+  padding: 10px;
+  margin: 0;
+  border-radius: 8px;
+}
+
+.productName { 
+  font-size: 14px;
+  color: rgb(28, 37, 41);
+  padding: 4px 0;
+}
+
+.countryImage {
+  width: 12px;
+  height: 12px;
+  vertical-align: baseline;
+  margin: 0 5px 0 0;
+}
+
+.units{
+  color: rgb(28, 37, 41);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.unitPrice{
+  color: rgb(93, 103, 108);
+}
+
+.productPrice {
+  display: flex;
+  gap: 4px 8px;
+  align-items: baseline;
+  flex-wrap: wrap;
+  width: 100%;
+}
+.productPriceContainer {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  color: rgb(28, 37, 41);
+  background-color: transparent;
+  /* padding: 0px 4px; */
+  border-radius: 4px;
+}
+.productPricePrice {
+  font-size: 20px;
+  line-height: 30px;
+  font-weight: 700;
+}
+.productPricePrice sup {
+  font-size: 11px;
+  top: -1px;
+  position: relative;
+}
+.currency {
+  font-size: 12px;
+  line-height: 24px;
+  color: rgb(28, 37, 41);
+}
+.productImageContainer {
+  position: relative;
+}
+.buyButton {
+  background-color: rgb(109, 163, 5);
+  border-radius: 100px;
+  padding: 8px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease 0s;
+  width: 40px;
+  height: 40px;
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  cursor: pointer
+}
+.buyButton:hover {
+  background-color: rgb(87, 130, 4);
 }

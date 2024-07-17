@@ -8,24 +8,74 @@ import { AiLoading } from "./AiLoading";
 
 import { useChat } from "@ai-sdk/react";
 
+import { ProductData } from "../page";
+
 const UserMessage = ({ text }: { text: string | null }) => {
   return <div className={styles.userMessage}>{text}</div>;
 };
 
-const AssistantMessage = ({ text }: { text: string | null }) => {
+const AssistantMessage = ({ text, productData }: { text: string | null, productData:ProductData[] }) => {
+  const renderTextWithProducts = (text: string) => {
+    const parts = text.split(/(<RohlikProduct id=\d+>)/g);
+
+    return parts.map((part, index) => {
+      const match = part.match(/<RohlikProduct id=(\d+)>/);
+      if (match) {
+        const id = match[1];
+        const product = productData.find((p) => p.productId === parseInt(id));
+        return product ? (
+          <div key={product.productId} className={styles.product}>
+            <div className={styles.productImageContainer}>
+              <img
+                onClick={ () => {parent.postMessage({ type: "changeUrl", url: `https://rohlik.cz/${product.baseLink}` }, "*")}}
+                className={styles.productImage}
+                src={`https://cdn.rohlik.cz${product.imgPath}`}
+                alt={product.productName} />
+                <div className={styles.buyButton} onClick={ () => {parent.postMessage({ type: "addProductToCart", product_id: product.productId }, "*")}}>
+                  <svg fill="none" height="24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7.998 18c1.1 0 1.999.9 1.999 2s-.9 2-2 2c-1.099 0-1.988-.9-1.988-2s.89-2 1.989-2Zm9.996 0c1.1 0 2 .9 2 2s-.9 2-2 2-1.99-.9-1.99-2 .89-2 1.99-2ZM4.64 2c.38 0 .74.22.9.57L6.209 4h14.794c.76 0 1.24.82.87 1.48l-3.58 6.49c-.339.62-.999 1.03-1.748 1.03H9.097l-1.1 2h10.997c.55 0 1 .45 1 1s-.45 1-1 1H7.998c-1.52 0-2.48-1.63-1.75-2.97l1.35-2.44L3.999 4H3C2.45 4 2 3.55 2 3s.45-1 1-1h1.639Z" fill="#FFFFFF"></path></svg>
+                </div>
+              </div>
+            <div className={styles.productPrice}>
+              <div className={styles.productPriceContainer}>
+                <span className={styles.productPricePrice}>
+                  <span>{product.price.whole}</span>
+                  <sup>{product.price.fraction}</sup>
+                </span>
+                <span className={styles.currency}>{product.price.currency}</span>
+              </div>
+            </div>
+            <div className={styles.productName}>
+              { product.coo && <img src={`https://cdn.rohlik.cz/images/countryFlags/${product.coo}.svg`} className={styles.countryImage} />}
+              {product.productName}
+            </div>
+            <div className={styles.units}>
+              <span>{product.textualAmount}</span>
+              <span className={styles.unitPrice} >{`${product.pricePerUnit.full}/${product.unit}`}</span>
+            </div>
+          </div>
+        ) : part;
+      }
+      return part;
+    });
+  };
+
   return (
     <div className={styles.assistantMessage}>
-      <Markdown>{text}</Markdown>
+      <div>
+        {renderTextWithProducts(text)}
+      </div>
     </div>
   );
 };
 
-const Message = ({ role, content }: ChatMessage) => {
+
+const Message = ({ role, content, productData }: ChatMessage) => {
+
   switch (role) {
     case "user":
       return <UserMessage text={content} />;
     case "assistant":
-      return <AssistantMessage text={content} />;
+      return <AssistantMessage text={content} productData={productData} />;
     default:
       return null;
   }
@@ -39,17 +89,21 @@ type ChatProps = {
     toolCallId: string;
     args: unknown;
   }) => void;
+  productData: ProductData[];
 };
 
 export type ChatMessage = {
   content: string | null;
   role: "user" | "assistant" | "tool" | "function" | "data" | "system";
   deltaPlaceholder?: boolean;
+  productData: ProductData[];
 };
 
-const Chat = ({ onAiStart, functionCallHandler }: ChatProps) => {
+const Chat = ({ onAiStart, functionCallHandler, productData }: ChatProps, ) => {
   const [generatingResponse, setGeneratingResponse] = useState<boolean>(false);
   const [inputDisabled, setInputDisabled] = useState(false);
+
+  console.log("PD", productData);
 
   const handleRunCompleted = () => {
     setInputDisabled(false);
@@ -57,7 +111,7 @@ const Chat = ({ onAiStart, functionCallHandler }: ChatProps) => {
   };
 
   const { messages, input, handleInputChange, handleSubmit } = useChat({
-    maxToolRoundtrips: 5,
+    maxToolRoundtrips: 200,
     api: "/api/langtail",
     onFinish: handleRunCompleted,
 
@@ -92,7 +146,7 @@ const Chat = ({ onAiStart, functionCallHandler }: ChatProps) => {
         {messages
           .filter((msg) => msg.content)
           .map((msg, index) => (
-            <Message key={index} role={msg.role} content={msg.content} />
+            <Message key={index} role={msg.role} content={msg.content} productData={productData} />
           ))}
         {generatingResponse && <AiLoading />}
         <div ref={messagesEndRef} />
