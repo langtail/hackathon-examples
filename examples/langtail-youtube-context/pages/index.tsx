@@ -20,20 +20,6 @@ export default function IndexPage() {
   const getVideoInfo = trpc.getVideoInfo.useMutation();
   const getVideoAutoTranscript = trpc.getVideoAutoTranscript.useMutation();
 
-  const handleProcessVideo = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (e.target) {
-      const formData = new FormData(e.target as HTMLFormElement);
-      const url = formData.get("url") as string;
-
-      if (url) {
-        getVideoAutoTranscript.mutate({
-          url,
-        });
-      }
-    }
-  };
-
   const handleUrlInputBlur = (e: FormEvent<HTMLInputElement>) => {
     const url = e.currentTarget.value;
     if (url) {
@@ -51,8 +37,11 @@ export default function IndexPage() {
 
   return (
     <div className="flex h-screen w-full flex-col">
-      <div className="flex gap-4 p-4">
-        <div className="flex flex-col gap-2 w-1/6">
+      <header className="px-4 py-2 text-lg font-medium bg-black/20">
+        <h1>YouTube to social media</h1>
+      </header>
+      <div className="flex flex-col md:flex-row gap-4 p-4">
+        <div className="flex flex-col gap-2 md:w-2/6">
           {!getVideoInfo.data || getVideoInfo.isPending ? (
             <div
               className={cn(
@@ -68,19 +57,20 @@ export default function IndexPage() {
             />
           )}
 
-          <span
+          <a
+            href={form.getValues().url}
             className={cn(
-              "w-full rounded-md h-6",
-              !getVideoInfo.data && "bg-black/10",
+              "w-full rounded-md h-6 font-medium",
+              !getVideoInfo.data && "bg-black/10 w-2/6",
               getVideoInfo.isPending && "animate-pulse"
             )}
           >
             {getVideoInfo.data?.title || ""}
-          </span>
+          </a>
         </div>
 
         <form
-          className="flex flex-col w-5/6 gap-2"
+          className="flex flex-col md:w-4/6 gap-2"
           onSubmit={form.handleSubmit((data) => {
             getVideoAutoTranscript.mutate({
               url: data.url,
@@ -117,7 +107,14 @@ export default function IndexPage() {
             </div>
 
             <button
-              className="bg-black/20 rounded-md px-3 py-1 text-sm"
+              className={cn(
+                "bg-black/20 rounded-md px-3 py-1 text-sm",
+                (getVideoInfo.isPending ||
+                  getVideoAutoTranscript.isPending ||
+                  !getVideoInfo.data) &&
+                  "bg-black/20 opacity-50 cursor-not-allowed",
+                getVideoAutoTranscript.isPending && "animate-pulse"
+              )}
               type="submit"
               disabled={getVideoInfo.isPending || !getVideoInfo.data}
             >
