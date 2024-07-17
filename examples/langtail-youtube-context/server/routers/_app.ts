@@ -1,9 +1,8 @@
-import { z } from "zod";
-import { procedure, router } from "../trpc";
-import youtubeDl from "youtube-dl-exec";
-import { lt } from "../../@/lib/utils";
 import fs from "fs";
-import path from "path";
+import youtubeDl from "youtube-dl-exec";
+import { z } from "zod";
+import { lt } from "../../@/lib/utils";
+import { procedure, router } from "../trpc";
 
 export const appRouter = router({
   getVideoInfo: procedure
@@ -42,7 +41,7 @@ export const appRouter = router({
 
         // open file and read content
         const content = await fs.promises.readFile(
-          process.cwd() + `/temp/transcript.${opts.input.lang}.srt`,
+          process.cwd() + `/temp/transcript.${opts.input.lang}.vtt`,
           {
             encoding: "utf-8",
           }
@@ -58,6 +57,23 @@ export const appRouter = router({
         });
 
         return result.choices || "no content";
+      } catch (err) {
+        console.error(err);
+      }
+    }),
+  downloadVideoAudio: procedure
+    .input(
+      z.object({
+        url: z.string(),
+      })
+    )
+    .mutation(async (opts) => {
+      try {
+        await youtubeDl(opts.input.url, {
+          extractAudio: true,
+          audioFormat: "mp3",
+          output: "./temp/audio.mp3",
+        });
       } catch (err) {
         console.error(err);
       }
