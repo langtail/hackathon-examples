@@ -78,6 +78,7 @@ export const appRouter = router({
       z.object({
         url: z.string(),
         lang: z.enum(["en", "cs"]).default("en"),
+        videoId: z.string(),
       })
     )
     .mutation(async (opts) => {
@@ -97,6 +98,16 @@ export const appRouter = router({
           }
         );
 
+        // save transcription to database
+        await prisma.transcription.create({
+          data: {
+            text: content,
+            language: opts.input.lang,
+            videoId: opts.input.videoId,
+            type: "AUTO",
+          },
+        });
+
         const result = await lt.prompts.invoke({
           prompt: "social-media-post",
           environment: "staging",
@@ -115,6 +126,8 @@ export const appRouter = router({
     .input(
       z.object({
         url: z.string(),
+        lang: z.enum(["en", "cs"]).default("en"),
+        videoId: z.string(),
       })
     )
     .mutation(async (opts) => {
@@ -134,6 +147,16 @@ export const appRouter = router({
         const transcription = await openai.audio.transcriptions.create({
           file: fs.createReadStream(process.cwd() + `/temp/audio.m4a`),
           model: "whisper-1",
+        });
+
+        // save transcription to database
+        await prisma.transcription.create({
+          data: {
+            text: transcription.text || "",
+            language: opts.input.lang,
+            videoId: opts.input.videoId,
+            type: "WHISPER",
+          },
         });
 
         const result = await lt.prompts.invoke({

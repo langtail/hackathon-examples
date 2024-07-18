@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FormEvent } from "react";
+import { FormEvent, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { cn } from "@/lib/styles";
@@ -10,6 +10,7 @@ const formSchema = z.object({
   maxLength: z.string().optional(),
   notes: z.string().optional(),
   useWhisper: z.boolean().optional(),
+  videoId: z.string(),
 });
 
 export default function IndexPage() {
@@ -21,6 +22,7 @@ export default function IndexPage() {
       maxLength: "",
       notes: "",
       useWhisper: false,
+      videoId: "",
     },
   });
 
@@ -58,6 +60,12 @@ export default function IndexPage() {
       processViaAudioWhisper.reset();
     }
   };
+
+  useEffect(() => {
+    if (getVideoInfo.data?.video.id) {
+      form.setValue("videoId", getVideoInfo.data.video.id);
+    }
+  }, [getVideoInfo.data?.video.id]);
 
   return (
     <div className="flex h-screen w-full flex-col">
@@ -100,11 +108,13 @@ export default function IndexPage() {
               processViaAutoTranscription.reset();
               processViaAudioWhisper.mutate({
                 url: data.url,
+                videoId: data.videoId,
               });
             } else {
               processViaAudioWhisper.reset();
               processViaAutoTranscription.mutate({
                 url: data.url,
+                videoId: data.videoId,
               });
             }
           })}
@@ -137,6 +147,7 @@ export default function IndexPage() {
               {...form.register("useWhisper")}
             />
           </div>
+          <input type="hidden" {...form.register("videoId")} />
 
           {form.formState.errors && (
             <div className="text-sm text-red-500">
