@@ -24,6 +24,22 @@ export type ProductData = {
   coo: string|null;
   textualAmount: string;
   unit: string;
+  composition: {
+    additiveScoreMax: number;
+    withoutAdditives: boolean;
+    nutritionalValues: {
+      dose: string;
+      energyValueKJ: number;
+      energyValueKcal: number;
+      fats: number;
+      saturatedFattyAcids: number;
+      carbohydrates: number;
+      sugars: number;
+      proteins: number;
+      salt: number;
+      fiber: number;
+    };
+  };
 };
 
 
@@ -53,7 +69,7 @@ const FunctionCalling = () => {
         content: "Product added"
       }]
     } else if (toolCall.toolName === "search_products") {
-      parent.postMessage({ type: "searchProduct", name: toolCall.args.product_name }, "*");
+      parent.postMessage({ type: "searchProduct", name: toolCall.args.product_name , number_of_products: toolCall.args.number_of_products}, "*");
       
       const result = await new Promise((resolve) => {
         window.addEventListener('message', function onMessage(event) {

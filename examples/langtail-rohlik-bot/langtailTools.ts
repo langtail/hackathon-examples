@@ -1,5 +1,5 @@
 // Langtail tools file, generated with `langtail generate-tools`
-// Generated at: 2024-07-17T09:50:24.478Z
+// Generated at: 2024-07-18T08:06:31.786Z
 // Langtail SDK Version: 0.4.5
 import { CoreTool } from 'ai'
 import { z } from 'zod'
@@ -67,7 +67,7 @@ const toolsObject = {
           "parameters": z.object({ "quantity": z.number().describe("How much to put in basket. 1 if not specified").optional(), "product_id": z.string().describe("The ID of the product to add to the basket") })
         }
       },
-      "default": {
+      "7": {
         "search_products": {
           "description": "Search for a product on rohlik.cz based on name",
           "parameters": z.object({ "product_name": z.string().describe("The name of the product to search for") })
@@ -75,6 +75,116 @@ const toolsObject = {
         "add_product_to_basket": {
           "description": "Add a product ID to the basket",
           "parameters": z.object({ "quantity": z.number().describe("How much to put in basket. 1 if not specified").optional(), "product_id": z.string().describe("The ID of the product to add to the basket") })
+        }
+      },
+      "8": {
+        "search_products": {
+          "description": "Search for a product on rohlik.cz based on name",
+          "parameters": z.object({ "product_name": z.string().describe("The name of the product to search for") })
+        },
+        "add_product_to_basket": {
+          "description": "Add a product ID to the basket",
+          "parameters": z.object({ "quantity": z.number().describe("How much to put in basket. 1 if not specified").optional(), "product_id": z.string().describe("The ID of the product to add to the basket") })
+        }
+      },
+      "9": {
+        "search_products": {
+          "description": "Search for a product on rohlik.cz based on name",
+          "parameters": z.object({ "product_name": z.string().describe("The name of the product to search for") })
+        },
+        "add_product_to_basket": {
+          "description": "Add a product ID to the basket",
+          "parameters": z.object({ "quantity": z.number().describe("How much to put in basket. 1 if not specified").optional(), "product_id": z.string().describe("The ID of the product to add to the basket") })
+        }
+      },
+      "10": {
+        "search_products": {
+          "description": "Search for a product on rohlik.cz based on name",
+          "parameters": z.object({ "product_name": z.string().describe("The name of the product to search for") })
+        },
+        "add_product_to_basket": {
+          "description": "Add a product ID to the basket",
+          "parameters": z.object({ "quantity": z.number().describe("How much to put in basket. 1 if not specified").optional(), "product_id": z.string().describe("The ID of the product to add to the basket") })
+        }
+      },
+      "11": {
+        "search_products": {
+          "description": "Search for a product on rohlik.cz based on name",
+          "parameters": z.object({ "product_name": z.string().describe("The name of the product to search for") })
+        },
+        "add_product_to_basket": {
+          "description": "Add a product ID to the basket",
+          "parameters": z.object({ "quantity": z.number().describe("How much to put in basket. 1 if not specified").optional(), "product_id": z.string().describe("The ID of the product to add to the basket") })
+        }
+      },
+      "12": {
+        "search_products": {
+          "description": "Search for a product on rohlik.cz based on name",
+          "parameters": z.object({ "product_name": z.string().describe("The name of the product to search for") })
+        },
+        "add_product_to_basket": {
+          "description": "Add a product ID to the basket",
+          "parameters": z.object({ "quantity": z.number().describe("How much to put in basket. 1 if not specified").optional(), "product_id": z.string().describe("The ID of the product to add to the basket") })
+        }
+      },
+      "13": {
+        "search_products": {
+          "description": "Search for a product on rohlik.cz based on name",
+          "parameters": z.object({ "product_name": z.string().describe("The name of the product to search for") })
+        },
+        "add_product_to_basket": {
+          "description": "Add a product ID to the basket",
+          "parameters": z.object({ "quantity": z.number().describe("How much to put in basket. 1 if not specified").optional(), "product_id": z.string().describe("The ID of the product to add to the basket") })
+        }
+      },
+      "14": {
+        "search_products": {
+          "description": "Search for a product on rohlik.cz based on name",
+          "parameters": z.object({ "product_name": z.string().describe("The name of the product to search for") })
+        },
+        "add_product_to_basket": {
+          "description": "Add a product ID to the basket",
+          "parameters": z.object({ "quantity": z.number().describe("How much to put in basket. 1 if not specified").optional(), "product_id": z.string().describe("The ID of the product to add to the basket") })
+        }
+      },
+      "15": {
+        "search_products": {
+          "description": "Search for a product on rohlik.cz based on name",
+          "parameters": z.object({ "product_name": z.string().describe("The name of the product to search for"), "number_of_products": z.number().describe("How many products will be searched, by default set it to 10. If they want to compare set it to 20.") })
+        },
+        "add_product_to_basket": {
+          "description": "Add a product ID to the basket",
+          "parameters": z.object({ "quantity": z.number().describe("How much to put in basket. 1 if not specified").optional(), "product_id": z.string().describe("The ID of the product to add to the basket") })
+        }
+      },
+      "16": {
+        "search_products": {
+          "description": "Search for a product on rohlik.cz based on name",
+          "parameters": z.object({ "product_name": z.string().describe("The name of the product to search for"), "number_of_products": z.number().describe("How many products will be searched, by default set it to 10. If they want to compare set it to 20.") })
+        },
+        "add_product_to_basket": {
+          "description": "Add a product ID to the basket",
+          "parameters": z.object({ "quantity": z.number().describe("How much to put in basket. 1 if not specified"), "product_id": z.string().describe("The ID of the product to add to the basket") })
+        }
+      },
+      "17": {
+        "search_products": {
+          "description": "Search for a product on rohlik.cz based on name",
+          "parameters": z.object({ "product_name": z.string().describe("The name of the product to search for"), "number_of_products": z.number().describe("How many products will be searched, by default set it to 10. If they want to compare set it to 20.") })
+        },
+        "add_product_to_basket": {
+          "description": "Add a product ID to the basket",
+          "parameters": z.object({ "quantity": z.number().describe("How much to put in basket. 1 if not specified"), "product_id": z.string().describe("The ID of the product to add to the basket") })
+        }
+      },
+      "default": {
+        "search_products": {
+          "description": "Search for a product on rohlik.cz based on name",
+          "parameters": z.object({ "product_name": z.string().describe("The name of the product to search for"), "number_of_products": z.number().describe("How many products will be searched, by default set it to 10. If they want to compare set it to 20.") })
+        },
+        "add_product_to_basket": {
+          "description": "Add a product ID to the basket",
+          "parameters": z.object({ "quantity": z.number().describe("How much to put in basket. 1 if not specified"), "product_id": z.string().describe("The ID of the product to add to the basket") })
         }
       }
     },

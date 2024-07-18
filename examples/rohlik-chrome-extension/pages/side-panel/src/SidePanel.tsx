@@ -25,6 +25,7 @@ const SidePanel = () => {
         console.log('Search product:', event.data.name);
         const data = {
           product_name: event.data.name,
+          number_of_products: event.data.number_of_products,
         };
         const results = await executeScriptInCurrentTabSearch(data);
         sendMessageToIframe(results[0].result);
@@ -72,7 +73,7 @@ const SidePanel = () => {
       return await chrome.scripting.executeScript({
         target: { tabId: tabs[0].id },
         function: async (data) => {
-          const resp = await fetch(`https://www.rohlik.cz/services/frontend-service/search-metadata?search=${data.product_name}&offset=0&limit=30&companyId=1&canCorrect=true`)
+          const resp = await fetch(`https://www.rohlik.cz/services/frontend-service/search-metadata?search=${data.product_name}&offset=0&limit=${data.number_of_products}&companyId=1&canCorrect=true`)
           const respJson = await resp.json()
           
           return JSON.stringify(respJson.data.productList.map((product: any) => ({
@@ -85,6 +86,7 @@ const SidePanel = () => {
             coo: product.coo,
             textualAmount: product.textualAmount,
             unit: product.unit,
+            composition: product.composition,
           })))
         },
         args: [data],
