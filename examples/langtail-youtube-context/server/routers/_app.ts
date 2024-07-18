@@ -2,8 +2,8 @@ import fs from "fs";
 import OpenAI from "openai";
 import youtubeDl from "youtube-dl-exec";
 import { z } from "zod";
-import { prisma } from "../../@/lib/prisma";
-import { lt } from "../../@/lib/utils";
+import { prisma } from "@/lib/prisma";
+import { lt } from "@/lib/utils";
 import { procedure, router } from "../trpc";
 
 const openai = new OpenAI({

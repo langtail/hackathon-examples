@@ -1,6 +1,6 @@
 import React from "react";
 import { notFound } from "next/navigation";
-import { trpc } from "../../../@/lib/trpc";
+import { trpc } from "@/lib/trpc";
 
 type VideoPageProps = {
   params: {

@@ -2,8 +2,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { FormEvent } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { cn } from "../@/lib/styles";
-import { trpc } from "../@/lib/trpc";
+import { cn } from "@/lib/styles";
+import { trpc } from "@/lib/trpc";
 
 const formSchema = z.object({
   url: z.string().url(),
