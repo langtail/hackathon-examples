@@ -99,25 +99,25 @@ export const appRouter = router({
         );
 
         // save transcription to database
-        await prisma.transcription.create({
-          data: {
-            text: content,
-            language: opts.input.lang,
-            videoId: opts.input.videoId,
-            type: "AUTO",
-          },
-        });
+        // await prisma.transcription.create({
+        //   data: {
+        //     text: content,
+        //     language: opts.input.lang,
+        //     videoId: opts.input.videoId,
+        //     type: "AUTO",
+        //   },
+        // });
 
-        const result = await lt.prompts.invoke({
-          prompt: "social-media-post",
-          environment: "staging",
-          variables: {
-            transcription: content,
-          },
-          // stream: true,
-        });
+        // const result = await lt.prompts.invoke({
+        //   prompt: "social-media-post",
+        //   environment: "staging",
+        //   variables: {
+        //     transcription: content,
+        //   },
+        //   // stream: true,
+        // });
 
-        return result.choices || "no content";
+        return content;
       } catch (err) {
         console.error(err);
       }
@@ -171,6 +171,55 @@ export const appRouter = router({
         return result.choices || "no content";
       } catch (err) {
         console.error(err);
+      }
+    }),
+
+  processVideo: procedure
+    .input(
+      z.object({
+        url: z.string().url(),
+        lang: z.enum(["en", "cs"]).default("en"),
+      })
+    )
+    .mutation(async (opts) => {
+      try {
+        const info = await youtubeDl(opts.input.url, {
+          dumpSingleJson: true,
+          noCheckCertificates: true,
+          noWarnings: true,
+          preferFreeFormats: true,
+          addHeader: ["referer:youtube.com", "user-agent:googlebot"],
+        });
+
+        let transcription = "";
+
+        if (info) {
+          await youtubeDl(opts.input.url, {
+            writeAutoSub: true,
+            convertSubs: "srt",
+            skipDownload: true,
+            output: "./temp/transcript",
+          });
+
+          transcription = await fs.promises.readFile(
+            process.cwd() + `/temp/transcript.${opts.input.lang}.vtt`,
+            {
+              encoding: "utf-8",
+            }
+          );
+        } else {
+          throw new Error("No video info found");
+        }
+
+        return {
+          id: info.id,
+          title: info.title,
+          description: info.description,
+          thumbnail: info.thumbnail,
+          transcription,
+        };
+      } catch (error) {
+        console.error(error);
       }
     }),
 });
