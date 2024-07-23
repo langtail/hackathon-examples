@@ -53,11 +53,11 @@ export default function Chat({ videoInfo }: ChatProps) {
       return (
         <div className="flex flex-col gap-3">
           <p>{args.message}</p>
-          <div className="flex gap-2 items-center">
-            <button className="p-1 px-2 text-xs rounded-xl bg-slate-200 text-black">
+          <div className="flex gap-2 items-center justify-end">
+            <button className="p-1 px-2 text-xs rounded-xl bg-slate-400 text-black">
               Copy
             </button>
-            <button className="p-1 px-2 text-xs rounded-xl bg-slate-200 text-black">
+            <button className="p-1 px-2 text-xs rounded-xl bg-slate-400 text-black">
               Share to X
             </button>
           </div>
@@ -98,7 +98,7 @@ export default function Chat({ videoInfo }: ChatProps) {
     <div className="flex flex-col h-full w-full max-w-md md:max-w-3xl">
       <div className="mt-2 flex-grow flex flex-col gap-2 w-full p-2 overflow-auto">
         <div className="flex justify-end">
-          <div className="p-3 bg-gray-500/20 rounded-lg max-w-[75%]">
+          <div className="p-3 bg-gray-500/10 rounded-lg max-w-[75%]">
             <div className="rounded-lg overflow-auto aspect-video bg-black/10">
               <img src={videoInfo.data!.thumbnail} />
             </div>
@@ -107,7 +107,7 @@ export default function Chat({ videoInfo }: ChatProps) {
         </div>
 
         <div className="flex">
-          <span className="p-3 bg-blue-500/20 rounded-lg max-w-[75%]">
+          <span className="p-3 bg-blue-500/10 rounded-lg max-w-[75%]">
             Tell me what you want to publish about this video and on what
             platform?
           </span>
@@ -121,7 +121,7 @@ export default function Chat({ videoInfo }: ChatProps) {
               <Fragment key={i}>
                 {message.content && (
                   <div key={`${i} - message`} className="flex">
-                    <span className="p-3 bg-blue-500/20 rounded-lg max-w-[75%]">
+                    <span className="p-3 bg-blue-500/10 rounded-lg max-w-[75%]">
                       {message.content}
                     </span>
                   </div>
@@ -129,7 +129,7 @@ export default function Chat({ videoInfo }: ChatProps) {
 
                 {msg.tool_calls?.map((toolCall: any, toolIndex: number) => (
                   <div key={`${i} - tool - ${toolIndex}`} className="flex">
-                    <span className="p-3 bg-blue-500/20 rounded-lg max-w-[75%]">
+                    <span className="p-3 bg-blue-500/10 rounded-lg max-w-[75%]">
                       {renderFunction(toolCall)}
                     </span>
                   </div>
@@ -139,7 +139,7 @@ export default function Chat({ videoInfo }: ChatProps) {
           } else if (message.role === "user") {
             return (
               <div key={i} className="flex justify-end">
-                <span className="p-3 bg-gray-500/20 rounded-lg max-w-[75%]">
+                <span className="p-3 bg-gray-500/10 rounded-lg max-w-[75%]">
                   {message.content}
                 </span>
               </div>
@@ -147,7 +147,7 @@ export default function Chat({ videoInfo }: ChatProps) {
           } else {
             return (
               <div key={i} className="flex justify-end">
-                <span className="p-3 bg-gray-500/20 rounded-lg max-w-[75%]">
+                <span className="p-3 bg-gray-500/10 rounded-lg max-w-[75%]">
                   unknown
                 </span>
               </div>
@@ -157,8 +157,8 @@ export default function Chat({ videoInfo }: ChatProps) {
 
         {isLoading && (
           <div className="flex">
-            <span className="p-3 bg-blue-500/20 rounded-lg max-w-[75%]">
-              Loading...
+            <span className="p-3 bg-blue-500/10 rounded-lg max-w-[75%]">
+              Answering...
             </span>
           </div>
         )}
