@@ -7,6 +7,7 @@ import Chat from "./components/chat";
 export type ProductData = {
   productId: number;
   productName: string;
+  inStock: boolean;
   imgPath: string;
   baseLink: string;
   price: {
@@ -53,23 +54,39 @@ const FunctionCalling = () => {
     toolCallId: string;
     toolName: string;
   }) => {
+    console.log("functionToolCall", toolCall)
     if (toolCall.toolName === "add_product_to_basket") {
+      console.log("add_product_to_basket", toolCall.args)
       const product_id =
         toolCall.args &&
         typeof toolCall.args === "object" &&
         "product_id" in toolCall.args
           ? String(toolCall.args.product_id)
           : "";
-
-      parent.postMessage({ type: "addProductToCart", product_id }, "*");
+      parent.postMessage({ type: "addProductToCart", product_id, limit,  }, "*");
       return [{
         role: "tool" as const,
         name: toolCall.toolName,
         tool_call_id: toolCall.toolCallId,
         content: "Product added"
       }]
+    } else if (toolCall.toolName === "add_multiple_products_to_basket") {
+      console.log("add_multiple_product_to_basket", toolCall.args)
+      const products =
+        toolCall.args &&
+        typeof toolCall.args === "object" &&
+        "product_id" in toolCall.args
+          ? Array(toolCall.args.products)
+          : "";
+      parent.postMessage({ type: "buyMultipleItems", products: toolCall.args.products }, "*");
+      return [{
+        role: "tool" as const,
+        name: toolCall.toolName,
+        tool_call_id: toolCall.toolCallId,
+        content: "Products added"
+      }]
     } else if (toolCall.toolName === "search_products") {
-      parent.postMessage({ type: "searchProduct", name: toolCall.args.product_name , number_of_products: toolCall.args.number_of_products}, "*");
+      parent.postMessage({ type: "searchProduct", name: toolCall.args.product_name , limit: toolCall.args.limit}, "*");
       
       const result = await new Promise((resolve) => {
         window.addEventListener('message', function onMessage(event) {
@@ -79,7 +96,7 @@ const FunctionCalling = () => {
           }
         })
       })
-      console.log(result)
+      console.log("setProductData", result)
       setProductData((prev) => [
         ...prev,
         ...JSON.parse(result),

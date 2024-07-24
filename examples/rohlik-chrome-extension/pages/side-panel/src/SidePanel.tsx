@@ -21,11 +21,18 @@ const SidePanel = () => {
           source: "false:Search Results"
         };
         executeScriptInCurrentTab(data);
+      } else if (event.data.type === 'buyMultipleItems') {
+        const data = {
+          products: event.data.products,
+        };
+        console.log('Buying multiple items:', data);
+        executeScript__BuyMultipleItems(data);
+      
       } else if (event.data.type === 'searchProduct') {
         console.log('Search product:', event.data.name);
         const data = {
           product_name: event.data.name,
-          number_of_products: event.data.number_of_products,
+          number_of_products: event.data.limit,
         };
         const results = await executeScriptInCurrentTabSearch(data);
         sendMessageToIframe(results[0].result);
@@ -41,6 +48,31 @@ const SidePanel = () => {
       window.removeEventListener('message', handleMessage);
     };
   }, []);
+
+
+  const executeScript__BuyMultipleItems = (data: object ) => {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (tabs[0].id) {
+        chrome.scripting.executeScript({
+          target: { tabId: tabs[0].id },
+          function: async (data) => {
+            const result = await fetch('https://www.rohlik.cz/api/v1/shopping-lists/cart/all', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(data)
+            })
+
+            window.location.reload()
+
+            return result
+          },
+          args: [data],
+        });
+      }
+    });
+  };
 
   const executeScriptInCurrentTab = (data: object ) => {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
@@ -67,6 +99,7 @@ const SidePanel = () => {
   };
 
   const executeScriptInCurrentTabSearch = async (data: object ) => {
+    console.log("executeScriptInCurrentTabSearch", data)
     const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
 
     if (tabs[0].id) {
@@ -76,18 +109,21 @@ const SidePanel = () => {
           const resp = await fetch(`https://www.rohlik.cz/services/frontend-service/search-metadata?search=${data.product_name}&offset=0&limit=${data.number_of_products}&companyId=1&canCorrect=true`)
           const respJson = await resp.json()
           
-          return JSON.stringify(respJson.data.productList.map((product: any) => ({
-            productId: product.productId,
-            productName: product.productName,
-            price: product.price,
-            pricePerUnit: product.pricePerUnit,
-            imgPath: product.imgPath,
-            baseLink: product.baseLink,
-            coo: product.coo,
-            textualAmount: product.textualAmount,
-            unit: product.unit,
-            composition: product.composition,
-          })))
+          return JSON.stringify(respJson.data.productList
+            .filter((product: any) => product.inStock)
+            .map((product: any) => ({
+              inStock: product.inStock,
+              productId: product.productId,
+              productName: product.productName,
+              price: product.price,
+              pricePerUnit: product.pricePerUnit,
+              imgPath: product.imgPath,
+              baseLink: product.baseLink,
+              coo: product.coo,
+              textualAmount: product.textualAmount,
+              unit: product.unit,
+              composition: product.composition,
+            })))
         },
         args: [data],
       });
